@@ -333,10 +333,11 @@ select.name-select:hover { border-color: var(--primary); }
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
   import { getFirestore, doc, onSnapshot, setDoc, updateDoc, arrayUnion, arrayRemove, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-  const firebaseConfig = {
+  // FIX: Configuração Dinâmica do Firebase para o ambiente atual
+  const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
     apiKey: "AIzaSyDPg0IN98UOgw0qs7bHKt9m9EBde0c74Sc",
     authDomain: "gustavo-e27c9.firebaseapp.com",
     projectId: "gustavo-e27c9",
@@ -353,11 +354,23 @@ select.name-select:hover { border-color: var(--primary); }
   try { enableIndexedDbPersistence(db).catch(console.log); } catch(e){}
 
   let currentUser = null;
-  const appId = "programa_reuniao_app"; 
+  // FIX: App ID dinâmico para garantir permissões de escrita
+  const appId = typeof __app_id !== 'undefined' ? __app_id : "programa_reuniao_app"; 
 
-  signInAnonymously(auth).catch((error) => {
-    document.getElementById('savedBadge').innerText = "Erro Login";
-  });
+  // FIX: Autenticação melhorada
+  const initAuth = async () => {
+    try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+            await signInAnonymously(auth);
+        }
+    } catch (e) {
+        console.error("Auth error", e);
+        document.getElementById('savedBadge').innerText = "Erro Login";
+    }
+  };
+  initAuth();
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -425,13 +438,15 @@ select.name-select:hover { border-color: var(--primary); }
       await setDoc(doc(db, "artifacts", appId, "users", currentUser.uid, "settings", "names"), 
         { list: arrayUnion(...namesToAdd) }, { merge: true });
       input.value = '';
-    } catch (e) {}
+    } catch (e) {
+      console.error("Erro ao salvar nomes:", e); // Log de erro adicionado
+    }
   }
 
   window.removeName = async function(name) {
     if (!currentUser) return;
     try { await updateDoc(doc(db, "artifacts", appId, "users", currentUser.uid, "settings", "names"), 
-      { list: arrayRemove(name) }); } catch (e) {}
+      { list: arrayRemove(name) }); } catch (e) { console.error(e); }
   }
 
   let saveTimer = null;

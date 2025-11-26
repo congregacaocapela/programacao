@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Programação — Reunião (App)</title>
+
+<!-- PWA Configuration -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3a2b54">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- Favicon Search (PNG or JPG) -->
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/jpeg" href="favicon.jpg">
+
+<!-- CSS -->
+<style>
+:root{
+  --bg:#f6f5f3;
+  --accent:#2b6b63; /* teal for header buttons */
+  --header:#fff5f7; /* light */
+  --primary:#3a2b54; /* deep purple */
+  --section1:#2f6f73; /* teal bar */
+  --section2:#9a6a28; /* brown/gold */
+  --section3:#7a2520; /* maroon */
+  --card:#ffffff;
+  --muted:#707070;
+  --green:#26a65b;
+  --blue:#2d6bd6;
+  --red:#c73b3b;
+}
+
+*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+body{margin:0;background:var(--bg);color:#111}
+
+/* HEADER MODIFICADO */
+.app-header{
+  background:var(--primary);
+  color:white;
+  padding:14px 12px;
+  display:flex;
+  align-items:center;
+  justify-content: center; /* Centraliza conteudo */
+  position: relative; /* Para posicionamento absoluto dos botoes */
+  min-height: 60px;
+}
+.app-header button{
+  background:transparent;
+  border:0;
+  color:white;
+  font-weight:700;
+  font-size:18px;
+  cursor:pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.title{
+  font-size:18px;
+  font-weight:800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.header-actions {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.badge{background:#fff;padding:6px 10px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);font-weight:600;font-size:12px}
+
+.container{padding:12px; max-width: 800px; margin: 0 auto;}
+
+/* card */
+.card{background:var(--card);border-radius:10px;padding:12px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.date{font-weight:800;font-size:18px;text-align:center;margin-bottom:6px; cursor: pointer; border-bottom: 1px dashed #ccc;}
+.date:hover { color: var(--primary); border-color: var(--primary); }
+
+.sub{font-weight:700;color:var(--muted);text-align:center;margin-bottom:10px}
+
+/* section headers */
+.section-block { margin-bottom: 20px; }
+.section-title{color:white;padding:8px 12px;border-radius:4px;font-weight:800;text-align:center;margin-bottom:8px}
+.section-title.t1{background:var(--section1)}
+.section-title.t2{background:var(--section2)}
+.section-title.t3{background:var(--section3)}
+
+/* part item */
+.part{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:8px;border:1px solid #eee;margin-bottom:8px; background: white;}
+.left{width:8px}
+.content{flex:1}
+.part-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.part-number{font-weight:800}
+.part-name{font-size:16px;font-weight:800}
+.meta{font-size:13px;color:var(--muted)}
+.part-row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+
+input[type="time"], input[type="text"], select {
+  padding:8px; border-radius:8px; border:1px solid #ddd; min-width:100px; font-size: 14px;
+}
+input[type="text"].title-input{font-weight:700;border:none;padding:0; width: 100%;}
+
+/* Select Styling */
+select.name-select {
+  flex: 1;
+  background-color: #fff;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  font-weight: 600;
+  color: #333;
+}
+select.name-select:hover { border-color: var(--primary); }
+
+.duration{font-weight:800;padding:6px 8px;border-radius:8px;background:#f0f0f0; white-space: nowrap; min-width: 60px; text-align: center;}
+.duration.live { color: white; background: var(--red); animation: pulse-text 1s infinite; }
+
+/* Timer Button */
+.btn-timer {
+  background: var(--green); color: white; border: 0; 
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px;
+  transition: background 0.2s;
+}
+.btn-timer.running {
+  background: var(--red);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(199, 59, 59, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(199, 59, 59, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(199, 59, 59, 0); }
+}
+
+/* icons */
+.icon{width:22px;height:22px;display:inline-block;vertical-align:middle}
+
+/* actions */
+.actions{display:flex;gap:8px;align-items:center}
+.btn{padding:8px 10px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+.btn.add{background:var(--primary);color:white}
+.btn.add-small{background:#eee;color:#333;font-size:13px;width:100%; margin-top:4px; border: 1px dashed #ccc;}
+.btn.add-small:hover { background: #e0e0e0; }
+.btn.pdf{background:var(--accent);color:white}
+
+/* remove button */
+.remove{background:transparent;border:0;color:var(--red);font-weight:800;font-size:18px; cursor: pointer;}
+
+/* MODAL STYLES */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); z-index: 100;
+  display: none; align-items: center; justify-content: center;
+}
+.modal {
+  background: white; width: 90%; max-width: 400px;
+  border-radius: 12px; padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.modal h2 { margin-top: 0; color: var(--primary); }
+.modal-close { float: right; cursor: pointer; font-size: 20px; font-weight: bold; color: #999; }
+.name-list { max-height: 200px; overflow-y: auto; margin-top: 10px; border-top: 1px solid #eee; }
+.name-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+.name-item button { color: var(--red); background: none; border: none; font-weight: bold; cursor: pointer; }
+.add-name-row { display: flex; gap: 8px; margin-top: 10px; }
+.add-name-row input { flex: 1; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <!-- Título Centralizado -->
+  <div class="title">PROGRAMAÇÃO</div>
+  
+  <!-- Ações na Direita -->
+  <div class="header-actions">
+    <!-- Botão de Limpar Tudo (X Vermelho) -->
+    <button onclick="openResetModal()" title="Limpar cronômetros e designações" style="color: #ff6b6b;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    
+    <!-- Configurações (Engrenagem) -->
+    <button onclick="openSettings()" title="Gerenciar Nomes">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+    </button>
+    
+    <!-- PDF -->
+    <button onclick="exportPDF()" title="Salvar/Compartilhar como PDF">PDF ⤓</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <div class="date" id="dateLabel" onclick="document.getElementById('dateHidden').showPicker()">quarta-feira, 26 de novembro de 2025</div>
+    <input type="date" id="dateHidden" style="visibility:hidden; height:0; width:0; position:absolute;" onchange="updateDateFromPicker(this)">
+    
+    <div class="sub" id="subLabel" contenteditable="true">ISAÍAS 1-2</div>
+
+    <div style="margin-top:6px">
+      <div><strong>Presidente</strong></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#26a65b"></circle><path d="M8 13l2.5 2.5L16 10" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <select id="presidente" class="name-select" onchange="scheduleSave()">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+      <div style="margin-top:8px"><strong>Dirigente (Sala B)</strong></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#26a65b"></circle><path d="M8 13l2.5 2.5L16 10" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <select id="dirigente" class="name-select" onchange="scheduleSave()">
+           <option value="">Selecione...</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 1: TESOUROS -->
+  <div class="section-block" id="block-t1">
+    <div class="section-title t1">TESOUROS DA PALAVRA DE DEUS</div>
+    <div class="parts-container" id="area-t1"></div>
+    <button class="btn add-small" onclick="addPart('t1')">+ Adicionar parte em Tesouros</button>
+  </div>
+
+  <!-- SEÇÃO 2: MINISTÉRIO -->
+  <div class="section-block" id="block-t2">
+    <div class="section-title t2">FAÇA SEU MELHOR NO MINISTÉRIO</div>
+    <div class="parts-container" id="area-t2"></div>
+    <button class="btn add-small" onclick="addPart('t2')">+ Adicionar parte em Ministério</button>
+  </div>
+
+  <!-- SEÇÃO 3: VIDA CRISTÃ -->
+  <div class="section-block" id="block-t3">
+    <div class="section-title t3">NOSSA VIDA CRISTÃ</div>
+    <div class="parts-container" id="area-t3"></div>
+    <button class="btn add-small" onclick="addPart('t3')">+ Adicionar parte em Vida Cristã</button>
+  </div>
+
+  <!-- Footer Actions -->
+  <div style="display:flex;gap:8px;align-items:center;margin-top:20px; flex-wrap:wrap;">
+    <button class="btn pdf" onclick="exportPDF()" style="flex:1">Exportar Tudo para PDF</button>
+    <div class="badge" id="savedBadge">Carregando...</div>
+  </div>
+
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal-overlay">
+  <div class="modal">
+    <span class="modal-close" onclick="closeSettings()">✕</span>
+    <h2>Gerenciar Nomes</h2>
+    <p style="color:var(--muted); font-size:14px;">Adicione nomes separados por vírgula.</p>
+    
+    <div class="add-name-row">
+      <input type="text" id="newPersonName" placeholder="Ex: Ana, Bruno, Carlos..." onkeydown="if(event.key==='Enter') addNameToList()">
+      <button class="btn add" onclick="addNameToList()">Adicionar</button>
+    </div>
+
+    <div class="name-list" id="namesContainer"></div>
+  </div>
+</div>
+
+<!-- Confirmation Modal Timer -->
+<div id="confirmModal" class="modal-overlay" style="z-index: 200;">
+  <div class="modal">
+    <span class="modal-close" onclick="closeConfirmModal()">✕</span>
+    <h2>Reiniciar Cronômetro?</h2>
+    <p>Esta parte já foi finalizada. Deseja reiniciar a contagem? O horário anterior será substituído.</p>
+    <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
+      <button class="btn" style="background:#eee; color:#333;" onclick="closeConfirmModal()">Cancelar</button>
+      <button class="btn" style="background:var(--red); color:white;" onclick="confirmRestart()">Reiniciar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset All Modal -->
+<div id="resetConfirmModal" class="modal-overlay" style="z-index: 210;">
+  <div class="modal">
+    <span class="modal-close" onclick="closeResetModal()">✕</span>
+    <h2 style="color:var(--red)">Limpar Tudo?</h2>
+    <p>Isso apagará <b>todas</b> as designações de nomes, horários e cronômetros para começar uma reunião do zero. As partes criadas serão mantidas.</p>
+    <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
+      <button class="btn" style="background:#eee; color:#333;" onclick="closeResetModal()">Cancelar</button>
+      <button class="btn" style="background:var(--red); color:white;" onclick="confirmResetAll()">Limpar Tudo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+  import { getFirestore, doc, onSnapshot, setDoc, updateDoc, arrayUnion, arrayRemove, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPg0IN98UOgw0qs7bHKt9m9EBde0c74Sc",
+    authDomain: "gustavo-e27c9.firebaseapp.com",
+    projectId: "gustavo-e27c9",
+    storageBucket: "gustavo-e27c9.firebasestorage.app",
+    messagingSenderId: "601135742894",
+    appId: "1:601135742894:web:656052a144d076e57c523f",
+    measurementId: "G-6B5BKTXJBD"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  try { enableIndexedDbPersistence(db).catch(console.log); } catch(e){}
+
+  let currentUser = null;
+  const appId = "programa_reuniao_app"; 
+
+  signInAnonymously(auth).catch((error) => {
+    document.getElementById('savedBadge').innerText = "Erro Login";
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+      document.getElementById('savedBadge').innerText = "Conectado";
+      initDataListeners(user.uid);
+    }
+  });
+
+  function initDataListeners(uid) {
+    const userDocRef = doc(db, "artifacts", appId, "users", uid, "data", "program_v2");
+    const namesDocRef = doc(db, "artifacts", appId, "users", uid, "settings", "names");
+
+    onSnapshot(namesDocRef, (docSnap) => {
+      let names = [];
+      if (docSnap.exists() && docSnap.data().list) names = docSnap.data().list.sort();
+      window.currentNamesList = names;
+      updateAllNameSelects();
+      updateSettingsModal(names);
+    });
+
+    onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if(!isEditing) loadFromState(data);
+        document.getElementById('savedBadge').innerText = "Sincronizado";
+      } else {
+         loadDefaultParts();
+         saveToFirebase();
+      }
+    });
+  }
+
+  window.currentNamesList = [];
+
+  window.updateAllNameSelects = function() {
+    document.querySelectorAll('select.name-select').forEach(sel => {
+        const currentVal = sel.value;
+        sel.innerHTML = '<option value="">Selecione...</option>';
+        window.currentNamesList.forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name; opt.innerText = name;
+            sel.appendChild(opt);
+        });
+        sel.value = currentVal;
+    });
+  }
+
+  function updateSettingsModal(names) {
+    const ui = document.getElementById('namesContainer');
+    ui.innerHTML = '';
+    names.forEach(name => {
+      const div = document.createElement('div');
+      div.className = 'name-item';
+      div.innerHTML = `<span>${name}</span> <button onclick="window.removeName('${name}')">Excluir</button>`;
+      ui.appendChild(div);
+    });
+  }
+
+  window.addNameToList = async function() {
+    const input = document.getElementById('newPersonName');
+    const namesToAdd = input.value.split(',').map(n => n.trim()).filter(n => n.length > 0);
+    if (!namesToAdd.length || !currentUser) return;
+    try {
+      await setDoc(doc(db, "artifacts", appId, "users", currentUser.uid, "settings", "names"), 
+        { list: arrayUnion(...namesToAdd) }, { merge: true });
+      input.value = '';
+    } catch (e) {}
+  }
+
+  window.removeName = async function(name) {
+    if (!currentUser) return;
+    try { await updateDoc(doc(db, "artifacts", appId, "users", currentUser.uid, "settings", "names"), 
+      { list: arrayRemove(name) }); } catch (e) {}
+  }
+
+  let saveTimer = null;
+  let isEditing = false;
+  window.scheduleSave = function() {
+    isEditing = true;
+    document.getElementById('savedBadge').innerText = 'Salvando...';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => { saveToFirebase(); isEditing = false; }, 1500);
+  }
+
+  async function saveToFirebase() {
+    if (!currentUser) return;
+    const state = {
+      dateLabel: document.getElementById('dateLabel').innerText,
+      subLabel: document.getElementById('subLabel').innerText,
+      presidente: document.getElementById('presidente').value,
+      dirigente: document.getElementById('dirigente').value,
+      parts: getParts()
+    };
+    try {
+      await setDoc(doc(db, "artifacts", appId, "users", currentUser.uid, "data", "program_v2"), state);
+      document.getElementById('savedBadge').innerText = "Salvo na Nuvem";
+      setTimeout(() => { if(document.getElementById('savedBadge').innerText === "Salvo na Nuvem") document.getElementById('savedBadge').innerText = "Sincronizado"; }, 2000);
+    } catch (e) {}
+  }
+
+  window.getParts = function() {
+    return Array.from(document.querySelectorAll('.part')).map(p => {
+      const id = p.getAttribute('data-id');
+      const parentId = p.parentElement.id; 
+      let section = 't1';
+      if(parentId === 'area-t2') section = 't2';
+      if(parentId === 'area-t3') section = 't3';
+      
+      const sInput = document.getElementById('start-'+id);
+      const startTs = sInput.dataset.startTs || null;
+
+      return {
+        id, section,
+        title: document.getElementById('title-'+id).value,
+        start: sInput.value,
+        end: document.getElementById('end-'+id).value,
+        name: document.getElementById('name-'+id).value,
+        startTs: startTs
+      }
+    });
+  }
+
+  window.loadFromState = function(state) {
+    if(!state) return;
+    document.getElementById('dateLabel').innerText = state.dateLabel || 'Data...';
+    document.getElementById('subLabel').innerText = state.subLabel || 'Tema...';
+    document.getElementById('presidente').value = state.presidente || '';
+    document.getElementById('dirigente').value = state.dirigente || '';
+
+    ['t1','t2','t3'].forEach(s => document.getElementById('area-'+s).innerHTML = '');
+    
+    (state.parts || []).forEach(p => {
+       let sec = p.section;
+       if(!sec) sec = (parseInt(p.id)<=3)?'t1':(parseInt(p.id)<=6)?'t2':'t3';
+       renderPart(p, sec);
+    });
+    
+    state.parts.forEach(p => {
+        updateDuration(p.id);
+        updateTimerButtonState(p.id); 
+    });
+  }
+
+  window.loadDefaultParts = function() {
+    renderPart({id:1, title:'Esperança para os que estão...', section:'t1'}, 't1');
+    renderPart({id:2, title:'Joias espirituais', section:'t1'}, 't1');
+    renderPart({id:3, title:'Leitura da Bíblia', section:'t1'}, 't1');
+    renderPart({id:4, title:'Iniciando conversas', section:'t2'}, 't2');
+    renderPart({id:5, title:'Cultivando o interesse', section:'t2'}, 't2');
+    renderPart({id:6, title:'Discurso', section:'t2'}, 't2');
+    renderPart({id:7, title:'Estudo Bíblico', section:'t3'}, 't3');
+  }
+
+  window.getOptionsHtml = function(selectedName) {
+    let html = '<option value="">Selecione...</option>';
+    (window.currentNamesList || []).forEach(name => {
+        html += `<option value="${name}" ${name===selectedName?'selected':''}>${name}</option>`;
+    });
+    return html;
+  }
+
+  function renderPart(data, sectionId) {
+      const container = document.getElementById('area-'+sectionId);
+      if(!container) return; 
+      const div = document.createElement('div');
+      div.className = 'part';
+      div.setAttribute('data-id', data.id);
+      
+      div.innerHTML = `
+        <div class="left"><div style="width:8px;height:100%;background:transparent"></div></div>
+        <div class="content">
+          <div class="part-top">
+            <div>
+              <div class="part-number">${data.id}. <span class="part-name"><input class="title-input" id="title-${data.id}" value="${data.title || ''}" placeholder="Título"></span></div>
+              <div class="meta">(— min)</div>
+            </div>
+            <div class="actions"><button class="remove" onclick="removePart(${data.id})">✕</button></div>
+          </div>
+          <div class="part-row">
+            
+            <button class="btn-timer" id="btn-timer-${data.id}" onclick="toggleTimer(${data.id})" title="Registrar tempo">▶</button>
+
+            <input type="time" id="start-${data.id}" value="${data.start||''}" 
+              data-start-ts="${data.startTs||''}"
+              onchange="this.removeAttribute('data-start-ts'); window.updateDuration(${data.id})">
+            
+            <input type="time" id="end-${data.id}" value="${data.end||''}" onchange="window.updateDuration(${data.id})">
+            
+            <select id="name-${data.id}" class="name-select" onchange="window.scheduleSave()">
+                ${window.getOptionsHtml(data.name || '')}
+            </select>
+            
+            <div class="duration" id="dur-${data.id}">--</div>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+  }
+
+  /* MODAL LOGIC FOR TIMER */
+  let pendingRestartId = null;
+
+  window.toggleTimer = function(id) {
+    const sInput = document.getElementById('start-'+id);
+    const eInput = document.getElementById('end-'+id);
+    const nowTs = Date.now();
+    const now = new Date(nowTs).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+
+    if (sInput.value && eInput.value) {
+        pendingRestartId = id;
+        document.getElementById('confirmModal').style.display = 'flex';
+        return;
+    }
+
+    if (!sInput.value) {
+        sInput.value = now;
+        sInput.dataset.startTs = nowTs;
+        eInput.value = '';
+    } 
+    else {
+        eInput.value = now;
+    }
+    updateDuration(id);
+    updateTimerButtonState(id);
+    scheduleSave();
+  }
+
+  window.confirmRestart = function() {
+    if(!pendingRestartId) return;
+    const id = pendingRestartId;
+    const sInput = document.getElementById('start-'+id);
+    const eInput = document.getElementById('end-'+id);
+    
+    const nowTs = Date.now();
+    const now = new Date(nowTs).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+
+    sInput.value = now;
+    sInput.dataset.startTs = nowTs;
+    eInput.value = '';
+    
+    updateDuration(id);
+    updateTimerButtonState(id);
+    scheduleSave();
+    closeConfirmModal();
+  }
+
+  window.closeConfirmModal = function() {
+    document.getElementById('confirmModal').style.display = 'none';
+    pendingRestartId = null;
+  }
+
+  window.updateTimerButtonState = function(id) {
+    const sInput = document.getElementById('start-'+id);
+    const eInput = document.getElementById('end-'+id);
+    const btn = document.getElementById('btn-timer-'+id);
+    if(!btn) return;
+
+    if (sInput.value && !eInput.value) {
+        btn.innerHTML = '■';
+        btn.classList.add('running');
+    } else {
+        btn.innerHTML = '▶';
+        btn.classList.remove('running');
+    }
+  }
+
+  window.updateDuration = function(id){
+    const s = document.getElementById('start-'+id)?.value;
+    const e = document.getElementById('end-'+id)?.value;
+    const out = document.getElementById('dur-'+id);
+    if(!out) return;
+    
+    if(s && e){
+      out.classList.remove('live');
+      let ms = toMinutes(e) - toMinutes(s);
+      if(ms<0) ms += 24*60;
+      out.innerText = ms + ' min';
+    } 
+    else if (!s) {
+       out.classList.remove('live');
+       out.innerText = '--';
+    }
+    window.updateTimerButtonState(id);
+  }
+  
+  document.addEventListener('input', function(e){
+    if(e.target && e.target.closest('.container')) scheduleSave();
+  });
+
+  /* RESET ALL LOGIC */
+  window.openResetModal = function() {
+    document.getElementById('resetConfirmModal').style.display = 'flex';
+  }
+  window.closeResetModal = function() {
+    document.getElementById('resetConfirmModal').style.display = 'none';
+  }
+  window.confirmResetAll = function() {
+    // 1. Limpar Inputs de Texto e Tempo e selects
+    document.getElementById('presidente').value = "";
+    document.getElementById('dirigente').value = "";
+    
+    const parts = document.querySelectorAll('.part');
+    parts.forEach(p => {
+        const id = p.getAttribute('data-id');
+        const s = document.getElementById('start-'+id);
+        const e = document.getElementById('end-'+id);
+        const sel = document.getElementById('name-'+id);
+        
+        if(s) { s.value = ""; s.removeAttribute('data-start-ts'); }
+        if(e) e.value = "";
+        if(sel) sel.value = "";
+        
+        window.updateDuration(id);
+        window.updateTimerButtonState(id);
+    });
+
+    // 2. Salvar estado limpo
+    window.scheduleSave();
+    window.closeResetModal();
+  }
+
+</script>
+
+<script>
+function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
+function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+function nextId(){
+  const parts = document.querySelectorAll('.part');
+  if(!parts.length) return 1;
+  const ids = Array.from(parts).map(p=>parseInt(p.getAttribute('data-id')));
+  return (Math.max(0,...ids)+1);
+}
+function addPart(sectionId){
+  const id = nextId();
+  const container = document.getElementById('area-'+sectionId);
+  const div = document.createElement('div');
+  div.className = 'part';
+  div.setAttribute('data-id', id);
+  const options = window.getOptionsHtml ? window.getOptionsHtml('') : '<option value="">Selecione...</option>';
+
+  div.innerHTML = `
+    <div class="left"><div style="width:8px;height:100%;background:transparent"></div></div>
+    <div class="content">
+      <div class="part-top">
+        <div>
+          <div class="part-number">${id}. <span class="part-name"><input class="title-input" id="title-${id}" value="Nova Parte"></span></div>
+          <div class="meta">(— min)</div>
+        </div>
+        <div class="actions"><button class="remove" onclick="removePart(${id})">✕</button></div>
+      </div>
+      <div class="part-row">
+        <button class="btn-timer" id="btn-timer-${id}" onclick="window.toggleTimer(${id})" title="Registrar tempo">▶</button>
+        <input type="time" id="start-${id}" onchange="this.removeAttribute('data-start-ts'); window.updateDuration(${id})">
+        <input type="time" id="end-${id}" onchange="window.updateDuration(${id})">
+        <select id="name-${id}" class="name-select" onchange="window.scheduleSave()">${options}</select>
+        <div class="duration" id="dur-${id}">--</div>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+  window.scheduleSave();
+}
+function removePart(id){
+  document.querySelector('.part[data-id="'+id+'"]')?.remove();
+  window.scheduleSave();
+}
+function toMinutes(t){
+  if(!t) return null;
+  const [hh,mm] = t.split(':').map(Number);
+  return hh*60+mm;
+}
+
+// Global Interval for Live Timers
+setInterval(() => {
+    document.querySelectorAll('.part').forEach(part => {
+        const id = part.getAttribute('data-id');
+        const sInput = document.getElementById('start-' + id);
+        const e = document.getElementById('end-' + id)?.value;
+        const out = document.getElementById('dur-' + id);
+        
+        if (sInput?.value && !e && out) {
+            out.classList.add('live');
+            
+            if (sInput.dataset.startTs) {
+                const startTs = parseInt(sInput.dataset.startTs);
+                const diffMs = Date.now() - startTs;
+                const diffSecs = Math.max(0, Math.floor(diffMs / 1000));
+                const mm = Math.floor(diffSecs / 60);
+                const ss = diffSecs % 60;
+                out.innerText = `${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+            } 
+            else {
+                const [sh, sm] = sInput.value.split(':').map(Number);
+                const now = new Date();
+                const start = new Date();
+                start.setHours(sh, sm, 0, 0);
+                let diffMs = now - start;
+                if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
+                const diffSecs = Math.floor(diffMs / 1000);
+                const mm = Math.floor(diffSecs / 60);
+                const ss = diffSecs % 60;
+                out.innerText = `${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+            }
+        }
+    });
+}, 1000);
+
+// Date Picker Handler
+window.updateDateFromPicker = function(input) {
+    if (!input.value) return;
+    const date = new Date(input.value + 'T12:00:00'); 
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const formatted = date.toLocaleDateString('pt-BR', options);
+    document.getElementById('dateLabel').innerText = formatted;
+    window.scheduleSave();
+}
+
+if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+  navigator.serviceWorker.register('./sw.js').catch(console.error);
+}
+function exportPDF(){
+  document.querySelectorAll('.btn.add-small').forEach(b => b.style.display = 'none');
+  document.querySelectorAll('.btn-timer').forEach(b => b.style.display = 'none'); 
+  const element = document.querySelector('.container');
+  const opt = { margin: 0.2, filename: 'programacao_reuniao.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS:true }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+  const badge = document.getElementById('savedBadge');
+  const oldText = badge.innerText;
+  badge.innerText = 'Gerando PDF...';
+  html2pdf().from(element).set(opt).save().then(()=> {
+    badge.innerText = 'PDF gerado';
+    setTimeout(()=> badge.innerText = oldText, 2000);
+    document.querySelectorAll('.btn.add-small').forEach(b => b.style.display = 'block');
+    document.querySelectorAll('.btn-timer').forEach(b => b.style.display = 'flex'); 
+  });
+}
+</script>
+</body>
+</html>

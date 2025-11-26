@@ -357,7 +357,7 @@ select.name-select:hover { border-color: var(--primary); }
   // FIX: App ID dinâmico para garantir permissões de escrita
   const appId = typeof __app_id !== 'undefined' ? __app_id : "programa_reuniao_app"; 
 
-  // FIX: Autenticação melhorada
+  // FIX: Autenticação melhorada com feedback visual
   const initAuth = async () => {
     try {
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -367,7 +367,12 @@ select.name-select:hover { border-color: var(--primary); }
         }
     } catch (e) {
         console.error("Auth error", e);
-        document.getElementById('savedBadge').innerText = "Erro Login";
+        const b = document.getElementById('savedBadge');
+        b.innerText = "Erro Login";
+        b.style.background = "#ff6b6b"; // Fundo vermelho para erro
+        b.style.color = "white";
+        // Feedback explícito para o usuário no primeiro carregamento se falhar
+        alert("Falha no Login Anônimo: " + e.message + "\n\nSe estiver usando um domínio personalizado (Github Pages), certifique-se de que ele está autorizado no Firebase Console > Authentication > Settings > Authorized Domains.");
     }
   };
   initAuth();
@@ -433,13 +438,34 @@ select.name-select:hover { border-color: var(--primary); }
   window.addNameToList = async function() {
     const input = document.getElementById('newPersonName');
     const namesToAdd = input.value.split(',').map(n => n.trim()).filter(n => n.length > 0);
-    if (!namesToAdd.length || !currentUser) return;
+    
+    // Verificação de segurança antes de tentar salvar
+    if (!currentUser) {
+        alert("Erro: Você não está conectado. Verifique se o ícone de status diz 'Conectado' ou 'Erro Login'.\n\nPossível causa: Domínio não autorizado no Firebase.");
+        return;
+    }
+    if (!namesToAdd.length) return;
+
+    const btn = document.querySelector('.btn.add');
+    const originalText = btn.innerText;
+
     try {
+      btn.innerText = "Salvando...";
+      btn.disabled = true;
+
       await setDoc(doc(db, "artifacts", appId, "users", currentUser.uid, "settings", "names"), 
         { list: arrayUnion(...namesToAdd) }, { merge: true });
+      
       input.value = '';
+      btn.innerText = "Adicionado!";
+      setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 1000);
+
     } catch (e) {
-      console.error("Erro ao salvar nomes:", e); // Log de erro adicionado
+      console.error("Erro ao salvar nomes:", e);
+      // Alerta crucial para debug
+      alert("Erro ao salvar no banco de dados:\n" + e.message + "\n\nVerifique se o domínio 'acaocapela.github.io' está adicionado em 'Authorized Domains' no Firebase Authentication.");
+      btn.innerText = originalText;
+      btn.disabled = false;
     }
   }
 

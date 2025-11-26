@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>Programação — Reunião (App)</title>
 
 <!-- PWA Configuration -->
@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#3a2b54">
 <link rel="apple-touch-icon" href="icon-192.png">
 
-<!-- Favicon Search (PNG or JPG) -->
+<!-- Favicon -->
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="icon" type="image/jpeg" href="favicon.jpg">
 
@@ -18,12 +18,12 @@
 <style>
 :root{
   --bg:#f6f5f3;
-  --accent:#2b6b63; /* teal for header buttons */
-  --header:#fff5f7; /* light */
-  --primary:#3a2b54; /* deep purple */
-  --section1:#2f6f73; /* teal bar */
-  --section2:#9a6a28; /* brown/gold */
-  --section3:#7a2520; /* maroon */
+  --accent:#2b6b63; 
+  --header:#fff5f7; 
+  --primary:#3a2b54; 
+  --section1:#2f6f73; 
+  --section2:#9a6a28; 
+  --section3:#7a2520; 
   --card:#ffffff;
   --muted:#707070;
   --green:#26a65b;
@@ -32,185 +32,226 @@
 }
 
 *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
-body{margin:0;background:var(--bg);color:#111}
+body{margin:0;background:var(--bg);color:#111; -webkit-tap-highlight-color: transparent;}
 
-/* HEADER MODIFICADO */
+/* HEADER AJUSTADO */
 .app-header{
   background:var(--primary);
   color:white;
-  padding:14px 12px;
+  padding:12px 16px;
   display:flex;
   align-items:center;
-  justify-content: center; /* Centraliza conteudo */
-  position: relative; /* Para posicionamento absoluto dos botoes */
+  justify-content: space-between; /* Título na esq, Botões na dir */
   min-height: 60px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .app-header button{
-  background:transparent;
-  border:0;
-  color:white;
-  font-weight:700;
-  font-size:18px;
-  cursor:pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background:transparent; border:0; color:white;
+  padding: 8px; 
+  display: flex; align-items: center; justify-content: center;
 }
 .title{
-  font-size:18px;
-  font-weight:800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size:18px; font-weight:800; text-transform: uppercase; letter-spacing: 0.5px;
+  white-space: nowrap; /* Não quebra linha */
 }
 .header-actions {
-  position: absolute;
-  right: 12px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
+  display: flex; gap: 8px; align-items: center;
 }
 
-.badge{background:#fff;padding:6px 10px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);font-weight:600;font-size:12px}
+.container{padding:10px; max-width: 800px; margin: 0 auto; padding-bottom: 80px;}
 
-.container{padding:12px; max-width: 800px; margin: 0 auto;}
+/* CARD */
+.card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 
-/* card */
-.card{background:var(--card);border-radius:10px;padding:12px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
-.date{font-weight:800;font-size:18px;text-align:center;margin-bottom:6px; cursor: pointer; border-bottom: 1px dashed #ccc;}
-.date:hover { color: var(--primary); border-color: var(--primary); }
+/* DATA WRAPPER FIX FOR MOBILE */
+.date-wrapper {
+  position: relative;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.date {
+  font-weight:800; font-size:18px; 
+  border-bottom: 1px dashed #ccc; 
+  display: inline-block;
+  padding-bottom: 2px;
+  color: var(--primary);
+}
+.date-input-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+}
 
-.sub{font-weight:700;color:var(--muted);text-align:center;margin-bottom:10px}
+.sub{font-weight:700;color:var(--muted);text-align:center;margin-bottom:12px; font-size: 14px;}
 
-/* section headers */
-.section-block { margin-bottom: 20px; }
-.section-title{color:white;padding:8px 12px;border-radius:4px;font-weight:800;text-align:center;margin-bottom:8px}
+/* SECTIONS */
+.section-block { margin-bottom: 24px; }
+.section-title{
+  color:white; padding:10px; border-radius:6px; 
+  font-weight:800; text-align:center; margin-bottom:10px;
+  font-size: 15px; text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 .section-title.t1{background:var(--section1)}
 .section-title.t2{background:var(--section2)}
 .section-title.t3{background:var(--section3)}
 
-/* part item */
-.part{display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:8px;border:1px solid #eee;margin-bottom:8px; background: white;}
-.left{width:8px}
-.content{flex:1}
-.part-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.part-number{font-weight:800}
-.part-name{font-size:16px;font-weight:800}
-.meta{font-size:13px;color:var(--muted)}
-.part-row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
-
-input[type="time"], input[type="text"], select {
-  padding:8px; border-radius:8px; border:1px solid #ddd; min-width:100px; font-size: 14px;
+/* PART ITEM */
+.part{
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  margin-bottom: 12px;
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
 }
-input[type="text"].title-input{font-weight:700;border:none;padding:0; width: 100%;}
+.left{width:6px; border-radius: 4px; background: #eee; align-self: stretch;}
 
-/* Select Styling */
+.content{flex:1; min-width: 0;}
+
+.part-top{
+  display:flex; justify-content:space-between; align-items:flex-start; gap:8px;
+  margin-bottom: 10px;
+}
+.part-number{font-weight:800; font-size: 15px; margin-right: 4px; white-space: nowrap;}
+
+textarea.title-input {
+  width: 100%;
+  border: none;
+  font-weight: 700;
+  font-size: 16px;
+  resize: none;
+  overflow: hidden;
+  padding: 0;
+  font-family: inherit;
+  color: #111;
+  background: transparent;
+  line-height: 1.4;
+  min-height: 22px;
+}
+textarea.title-input:focus { outline: none; border-bottom: 1px solid var(--primary); }
+
+.meta{font-size:12px; color:var(--muted); margin-top: 2px;}
+
+.part-row{
+  display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+}
+
+input[type="time"], select {
+  padding:10px 8px; 
+  border-radius:8px; border:1px solid #ddd; 
+  background: #fff;
+  font-size: 15px;
+  height: 40px;
+}
+input[type="time"] { width: 85px; text-align: center; }
+
 select.name-select {
   flex: 1;
-  background-color: #fff;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  font-weight: 600;
-  color: #333;
+  min-width: 140px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
-select.name-select:hover { border-color: var(--primary); }
 
-.duration{font-weight:800;padding:6px 8px;border-radius:8px;background:#f0f0f0; white-space: nowrap; min-width: 60px; text-align: center;}
+.duration{
+  font-weight:800; padding:0 10px; 
+  border-radius:8px; background:#f0f0f0; 
+  height: 40px; line-height: 40px;
+  font-size: 14px;
+  min-width: 70px; text-align: center;
+}
 .duration.live { color: white; background: var(--red); animation: pulse-text 1s infinite; }
 
-/* Timer Button */
 .btn-timer {
   background: var(--green); color: white; border: 0; 
-  width: 36px; height: 36px; border-radius: 50%;
+  width: 40px; height: 40px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 14px;
-  transition: background 0.2s;
+  cursor: pointer; font-size: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
-.btn-timer.running {
-  background: var(--red);
-  animation: pulse 2s infinite;
+.btn-timer.running { background: var(--red); animation: pulse 2s infinite; }
+
+.remove{
+  background:transparent; border:0; color:var(--red); 
+  font-weight:800; font-size:20px; padding: 4px 8px;
 }
+
+.btn.add-small{
+  background:#f8f9fa; color:#333; font-size:14px; padding: 12px;
+  width:100%; margin-top:4px; border: 1px dashed #ccc; border-radius: 8px;
+}
+.btn.pdf{
+  background:var(--accent); color:white; padding: 14px; 
+  border-radius: 10px; width: 100%; font-size: 16px; 
+  box-shadow: 0 4px 10px rgba(43, 107, 99, 0.3);
+}
+
+.badge{background:#fff;padding:6px 12px;border-radius:20px;box-shadow:0 2px 5px rgba(0,0,0,0.08);font-weight:600;font-size:12px; white-space: nowrap;}
+
+/* MODAL */
+.modal-overlay { z-index: 999; }
+.modal { width: 90%; max-width: 350px; padding: 24px; border-radius: 16px; }
+.add-name-row input { padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; }
+.btn.add { padding: 0 16px; border-radius: 8px; }
+
 @keyframes pulse {
   0% { box-shadow: 0 0 0 0 rgba(199, 59, 59, 0.7); }
-  70% { box-shadow: 0 0 0 6px rgba(199, 59, 59, 0); }
+  70% { box-shadow: 0 0 0 8px rgba(199, 59, 59, 0); }
   100% { box-shadow: 0 0 0 0 rgba(199, 59, 59, 0); }
 }
 
-/* icons */
-.icon{width:22px;height:22px;display:inline-block;vertical-align:middle}
-
-/* actions */
-.actions{display:flex;gap:8px;align-items:center}
-.btn{padding:8px 10px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
-.btn.add{background:var(--primary);color:white}
-.btn.add-small{background:#eee;color:#333;font-size:13px;width:100%; margin-top:4px; border: 1px dashed #ccc;}
-.btn.add-small:hover { background: #e0e0e0; }
-.btn.pdf{background:var(--accent);color:white}
-
-/* remove button */
-.remove{background:transparent;border:0;color:var(--red);font-weight:800;font-size:18px; cursor: pointer;}
-
-/* MODAL STYLES */
-.modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5); z-index: 100;
-  display: none; align-items: center; justify-content: center;
+@media(max-width: 400px) {
+  .part-row { gap: 6px; }
+  input[type="time"] { width: 75px; font-size: 13px; }
+  .btn-timer { width: 36px; height: 36px; }
+  .duration { min-width: 60px; font-size: 13px; }
+  select.name-select { width: 100%; flex-basis: 100%; margin-top: 4px; }
 }
-.modal {
-  background: white; width: 90%; max-width: 400px;
-  border-radius: 12px; padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-.modal h2 { margin-top: 0; color: var(--primary); }
-.modal-close { float: right; cursor: pointer; font-size: 20px; font-weight: bold; color: #999; }
-.name-list { max-height: 200px; overflow-y: auto; margin-top: 10px; border-top: 1px solid #eee; }
-.name-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
-.name-item button { color: var(--red); background: none; border: none; font-weight: bold; cursor: pointer; }
-.add-name-row { display: flex; gap: 8px; margin-top: 10px; }
-.add-name-row input { flex: 1; }
 </style>
 </head>
 <body>
 
 <header class="app-header">
-  <!-- Título Centralizado -->
   <div class="title">PROGRAMAÇÃO</div>
-  
-  <!-- Ações na Direita -->
   <div class="header-actions">
-    <!-- Botão de Limpar Tudo (X Vermelho) -->
-    <button onclick="openResetModal()" title="Limpar cronômetros e designações" style="color: #ff6b6b;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    <button onclick="openResetModal()" title="Limpar">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
-    
-    <!-- Configurações (Engrenagem) -->
-    <button onclick="openSettings()" title="Gerenciar Nomes">
+    <button onclick="openSettings()" title="Nomes">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
     </button>
-    
-    <!-- PDF -->
-    <button onclick="exportPDF()" title="Salvar/Compartilhar como PDF">PDF ⤓</button>
+    <button onclick="exportPDF()" title="PDF">PDF ⤓</button>
   </div>
 </header>
 
 <div class="container">
 
   <div class="card">
-    <div class="date" id="dateLabel" onclick="document.getElementById('dateHidden').showPicker()">quarta-feira, 26 de novembro de 2025</div>
-    <input type="date" id="dateHidden" style="visibility:hidden; height:0; width:0; position:absolute;" onchange="updateDateFromPicker(this)">
+    <div class="date-wrapper">
+      <div class="date" id="dateLabel">quarta-feira, 26 de novembro de 2025</div>
+      <input type="date" id="dateHidden" class="date-input-overlay" onchange="updateDateFromPicker(this)">
+    </div>
     
     <div class="sub" id="subLabel" contenteditable="true">ISAÍAS 1-2</div>
 
-    <div style="margin-top:6px">
-      <div><strong>Presidente</strong></div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+    <div style="margin-top:12px">
+      <div style="font-size:14px; color:var(--muted); margin-bottom:4px;">Presidente</div>
+      <div style="display:flex;align-items:center;gap:8px;">
         <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#26a65b"></circle><path d="M8 13l2.5 2.5L16 10" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <select id="presidente" class="name-select" onchange="scheduleSave()">
           <option value="">Selecione...</option>
         </select>
       </div>
-      <div style="margin-top:8px"><strong>Dirigente (Sala B)</strong></div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+      
+      <div style="font-size:14px; color:var(--muted); margin-bottom:4px; margin-top:12px;">Dirigente (Sala B)</div>
+      <div style="display:flex;align-items:center;gap:8px;">
         <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#26a65b"></circle><path d="M8 13l2.5 2.5L16 10" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <select id="dirigente" class="name-select" onchange="scheduleSave()">
            <option value="">Selecione...</option>
@@ -219,81 +260,73 @@ select.name-select:hover { border-color: var(--primary); }
     </div>
   </div>
 
-  <!-- SEÇÃO 1: TESOUROS -->
   <div class="section-block" id="block-t1">
     <div class="section-title t1">TESOUROS DA PALAVRA DE DEUS</div>
     <div class="parts-container" id="area-t1"></div>
-    <button class="btn add-small" onclick="addPart('t1')">+ Adicionar parte em Tesouros</button>
+    <button class="btn add-small" onclick="addPart('t1')">+ Adicionar</button>
   </div>
 
-  <!-- SEÇÃO 2: MINISTÉRIO -->
   <div class="section-block" id="block-t2">
     <div class="section-title t2">FAÇA SEU MELHOR NO MINISTÉRIO</div>
     <div class="parts-container" id="area-t2"></div>
-    <button class="btn add-small" onclick="addPart('t2')">+ Adicionar parte em Ministério</button>
+    <button class="btn add-small" onclick="addPart('t2')">+ Adicionar</button>
   </div>
 
-  <!-- SEÇÃO 3: VIDA CRISTÃ -->
   <div class="section-block" id="block-t3">
     <div class="section-title t3">NOSSA VIDA CRISTÃ</div>
     <div class="parts-container" id="area-t3"></div>
-    <button class="btn add-small" onclick="addPart('t3')">+ Adicionar parte em Vida Cristã</button>
+    <button class="btn add-small" onclick="addPart('t3')">+ Adicionar</button>
   </div>
 
-  <!-- Footer Actions -->
-  <div style="display:flex;gap:8px;align-items:center;margin-top:20px; flex-wrap:wrap;">
-    <button class="btn pdf" onclick="exportPDF()" style="flex:1">Exportar Tudo para PDF</button>
+  <div style="display:flex; gap:12px; align-items:center; margin-top:30px; margin-bottom: 20px;">
+    <button class="btn pdf" onclick="exportPDF()">Salvar PDF</button>
+  </div>
+  <div style="text-align:center;">
     <div class="badge" id="savedBadge">Carregando...</div>
   </div>
 
 </div>
 
-<!-- Settings Modal -->
+<!-- Modals -->
 <div id="settingsModal" class="modal-overlay">
   <div class="modal">
     <span class="modal-close" onclick="closeSettings()">✕</span>
-    <h2>Gerenciar Nomes</h2>
-    <p style="color:var(--muted); font-size:14px;">Adicione nomes separados por vírgula.</p>
-    
+    <h2>Nomes</h2>
+    <p style="color:var(--muted); font-size:14px;">Adicione nomes (separados por vírgula).</p>
     <div class="add-name-row">
-      <input type="text" id="newPersonName" placeholder="Ex: Ana, Bruno, Carlos..." onkeydown="if(event.key==='Enter') addNameToList()">
-      <button class="btn add" onclick="addNameToList()">Adicionar</button>
+      <input type="text" id="newPersonName" placeholder="Ex: Ana, Bruno..." onkeydown="if(event.key==='Enter') addNameToList()">
+      <button class="btn add" onclick="addNameToList()">OK</button>
     </div>
-
     <div class="name-list" id="namesContainer"></div>
   </div>
 </div>
 
-<!-- Confirmation Modal Timer -->
 <div id="confirmModal" class="modal-overlay" style="z-index: 200;">
   <div class="modal">
     <span class="modal-close" onclick="closeConfirmModal()">✕</span>
-    <h2>Reiniciar Cronômetro?</h2>
-    <p>Esta parte já foi finalizada. Deseja reiniciar a contagem? O horário anterior será substituído.</p>
+    <h2>Reiniciar?</h2>
+    <p>Substituir o horário anterior?</p>
     <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
-      <button class="btn" style="background:#eee; color:#333;" onclick="closeConfirmModal()">Cancelar</button>
-      <button class="btn" style="background:var(--red); color:white;" onclick="confirmRestart()">Reiniciar</button>
+      <button class="btn" style="background:#eee; color:#333;" onclick="closeConfirmModal()">Não</button>
+      <button class="btn" style="background:var(--red); color:white;" onclick="confirmRestart()">Sim, Reiniciar</button>
     </div>
   </div>
 </div>
 
-<!-- Reset All Modal -->
 <div id="resetConfirmModal" class="modal-overlay" style="z-index: 210;">
   <div class="modal">
     <span class="modal-close" onclick="closeResetModal()">✕</span>
     <h2 style="color:var(--red)">Limpar Tudo?</h2>
-    <p>Isso apagará <b>todas</b> as designações de nomes, horários e cronômetros para começar uma reunião do zero. As partes criadas serão mantidas.</p>
+    <p>Apagar horários, cronômetros e nomes? (Partes serão mantidas)</p>
     <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
       <button class="btn" style="background:#eee; color:#333;" onclick="closeResetModal()">Cancelar</button>
-      <button class="btn" style="background:var(--red); color:white;" onclick="confirmResetAll()">Limpar Tudo</button>
+      <button class="btn" style="background:var(--red); color:white;" onclick="confirmResetAll()">Limpar</button>
     </div>
   </div>
 </div>
 
-<!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 
-<!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
   import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
@@ -435,7 +468,7 @@ select.name-select:hover { border-color: var(--primary); }
 
       return {
         id, section,
-        title: document.getElementById('title-'+id).value,
+        title: document.getElementById('title-'+id).value, 
         start: sInput.value,
         end: document.getElementById('end-'+id).value,
         name: document.getElementById('name-'+id).value,
@@ -491,199 +524,36 @@ select.name-select:hover { border-color: var(--primary); }
       div.setAttribute('data-id', data.id);
       
       div.innerHTML = `
-        <div class="left"><div style="width:8px;height:100%;background:transparent"></div></div>
-        <div class="content">
-          <div class="part-top">
-            <div>
-              <div class="part-number">${data.id}. <span class="part-name"><input class="title-input" id="title-${data.id}" value="${data.title || ''}" placeholder="Título"></span></div>
-              <div class="meta">(— min)</div>
-            </div>
-            <div class="actions"><button class="remove" onclick="removePart(${data.id})">✕</button></div>
-          </div>
-          <div class="part-row">
-            
-            <button class="btn-timer" id="btn-timer-${data.id}" onclick="toggleTimer(${data.id})" title="Registrar tempo">▶</button>
-
-            <input type="time" id="start-${data.id}" value="${data.start||''}" 
-              data-start-ts="${data.startTs||''}"
-              onchange="this.removeAttribute('data-start-ts'); window.updateDuration(${data.id})">
-            
-            <input type="time" id="end-${data.id}" value="${data.end||''}" onchange="window.updateDuration(${data.id})">
-            
-            <select id="name-${data.id}" class="name-select" onchange="window.scheduleSave()">
-                ${window.getOptionsHtml(data.name || '')}
-            </select>
-            
-            <div class="duration" id="dur-${data.id}">--</div>
-          </div>
-        </div>
-      `;
-      container.appendChild(div);
-  }
-
-  /* MODAL LOGIC FOR TIMER */
-  let pendingRestartId = null;
-
-  window.toggleTimer = function(id) {
-    const sInput = document.getElementById('start-'+id);
-    const eInput = document.getElementById('end-'+id);
-    const nowTs = Date.now();
-    const now = new Date(nowTs).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-
-    if (sInput.value && eInput.value) {
-        pendingRestartId = id;
-        document.getElementById('confirmModal').style.display = 'flex';
-        return;
-    }
-
-    if (!sInput.value) {
-        sInput.value = now;
-        sInput.dataset.startTs = nowTs;
-        eInput.value = '';
-    } 
-    else {
-        eInput.value = now;
-    }
-    updateDuration(id);
-    updateTimerButtonState(id);
-    scheduleSave();
-  }
-
-  window.confirmRestart = function() {
-    if(!pendingRestartId) return;
-    const id = pendingRestartId;
-    const sInput = document.getElementById('start-'+id);
-    const eInput = document.getElementById('end-'+id);
-    
-    const nowTs = Date.now();
-    const now = new Date(nowTs).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-
-    sInput.value = now;
-    sInput.dataset.startTs = nowTs;
-    eInput.value = '';
-    
-    updateDuration(id);
-    updateTimerButtonState(id);
-    scheduleSave();
-    closeConfirmModal();
-  }
-
-  window.closeConfirmModal = function() {
-    document.getElementById('confirmModal').style.display = 'none';
-    pendingRestartId = null;
-  }
-
-  window.updateTimerButtonState = function(id) {
-    const sInput = document.getElementById('start-'+id);
-    const eInput = document.getElementById('end-'+id);
-    const btn = document.getElementById('btn-timer-'+id);
-    if(!btn) return;
-
-    if (sInput.value && !eInput.value) {
-        btn.innerHTML = '■';
-        btn.classList.add('running');
-    } else {
-        btn.innerHTML = '▶';
-        btn.classList.remove('running');
-    }
-  }
-
-  window.updateDuration = function(id){
-    const s = document.getElementById('start-'+id)?.value;
-    const e = document.getElementById('end-'+id)?.value;
-    const out = document.getElementById('dur-'+id);
-    if(!out) return;
-    
-    if(s && e){
-      out.classList.remove('live');
-      let ms = toMinutes(e) - toMinutes(s);
-      if(ms<0) ms += 24*60;
-      out.innerText = ms + ' min';
-    } 
-    else if (!s) {
-       out.classList.remove('live');
-       out.innerText = '--';
-    }
-    window.updateTimerButtonState(id);
-  }
-  
-  document.addEventListener('input', function(e){
-    if(e.target && e.target.closest('.container')) scheduleSave();
-  });
-
-  /* RESET ALL LOGIC */
-  window.openResetModal = function() {
-    document.getElementById('resetConfirmModal').style.display = 'flex';
-  }
-  window.closeResetModal = function() {
-    document.getElementById('resetConfirmModal').style.display = 'none';
-  }
-  window.confirmResetAll = function() {
-    // 1. Limpar Inputs de Texto e Tempo e selects
-    document.getElementById('presidente').value = "";
-    document.getElementById('dirigente').value = "";
-    
-    const parts = document.querySelectorAll('.part');
-    parts.forEach(p => {
-        const id = p.getAttribute('data-id');
-        const s = document.getElementById('start-'+id);
-        const e = document.getElementById('end-'+id);
-        const sel = document.getElementById('name-'+id);
-        
-        if(s) { s.value = ""; s.removeAttribute('data-start-ts'); }
-        if(e) e.value = "";
-        if(sel) sel.value = "";
-        
-        window.updateDuration(id);
-        window.updateTimerButtonState(id);
-    });
-
-    // 2. Salvar estado limpo
-    window.scheduleSave();
-    window.closeResetModal();
-  }
-
-</script>
-
-<script>
-function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
-function nextId(){
-  const parts = document.querySelectorAll('.part');
-  if(!parts.length) return 1;
-  const ids = Array.from(parts).map(p=>parseInt(p.getAttribute('data-id')));
-  return (Math.max(0,...ids)+1);
-}
-function addPart(sectionId){
-  const id = nextId();
-  const container = document.getElementById('area-'+sectionId);
-  const div = document.createElement('div');
-  div.className = 'part';
-  div.setAttribute('data-id', id);
-  const options = window.getOptionsHtml ? window.getOptionsHtml('') : '<option value="">Selecione...</option>';
-
-  div.innerHTML = `
-    <div class="left"><div style="width:8px;height:100%;background:transparent"></div></div>
+        <div class="left"><div style="width:100%;height:100%;background:${
+          sectionId==='t1'?'var(--section1)':sectionId==='t2'?'var(--section2)':'var(--section3)'
+        }"></div></div>
     <div class="content">
       <div class="part-top">
-        <div>
-          <div class="part-number">${id}. <span class="part-name"><input class="title-input" id="title-${id}" value="Nova Parte"></span></div>
-          <div class="meta">(— min)</div>
+        <div style="flex:1; display:flex; gap:2px; align-items:flex-start;">
+          <div class="part-number">${data.id}.</div> 
+          <textarea class="title-input" id="title-${data.id}" rows="1" oninput="autoResize(this); window.scheduleSave()">${data.title || ''}</textarea>
         </div>
-        <div class="actions"><button class="remove" onclick="removePart(${id})">✕</button></div>
+        <div class="actions"><button class="remove" onclick="removePart(${data.id})">✕</button></div>
       </div>
       <div class="part-row">
-        <button class="btn-timer" id="btn-timer-${id}" onclick="window.toggleTimer(${id})" title="Registrar tempo">▶</button>
-        <input type="time" id="start-${id}" onchange="this.removeAttribute('data-start-ts'); window.updateDuration(${id})">
-        <input type="time" id="end-${id}" onchange="window.updateDuration(${id})">
-        <select id="name-${id}" class="name-select" onchange="window.scheduleSave()">${options}</select>
-        <div class="duration" id="dur-${id}">--</div>
+        <button class="btn-timer" id="btn-timer-${data.id}" onclick="window.toggleTimer(${data.id})">▶</button>
+        <input type="time" id="start-${data.id}" onchange="this.removeAttribute('data-start-ts'); window.updateDuration(${data.id})">
+        <input type="time" id="end-${data.id}" onchange="window.updateDuration(${data.id})">
+        <select id="name-${data.id}" class="name-select" onchange="window.scheduleSave()">${window.getOptionsHtml(data.name || '')}</select>
+        <div class="duration" id="dur-${data.id}">--</div>
       </div>
     </div>
   `;
   container.appendChild(div);
-  window.scheduleSave();
+  setTimeout(() => autoResize(document.getElementById('title-'+data.id)), 0);
 }
+
+// Auto Resize Textarea logic
+window.autoResize = function(elem) {
+  elem.style.height = 'auto';
+  elem.style.height = elem.scrollHeight + 'px';
+}
+
 function removePart(id){
   document.querySelector('.part[data-id="'+id+'"]')?.remove();
   window.scheduleSave();
@@ -729,7 +599,6 @@ setInterval(() => {
     });
 }, 1000);
 
-// Date Picker Handler
 window.updateDateFromPicker = function(input) {
     if (!input.value) return;
     const date = new Date(input.value + 'T12:00:00'); 

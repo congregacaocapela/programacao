@@ -276,8 +276,8 @@ select.name-select:hover { border-color: var(--primary); }
 <div id="settingsModal" class="modal-overlay">
   <div class="modal">
     <span class="modal-close" onclick="closeSettings()">✕</span>
-    <h2>Gerenciar Nomes</h2>
-    <p style="color:var(--muted); font-size:14px;">Adicione nomes separados por vírgula.</p>
+    <h2>Gerenciar Nomes (Público)</h2>
+    <p style="color:var(--muted); font-size:14px;">Adicione nomes separados por vírgula. <b>Atenção:</b> Esta lista é pública e compartilhada com todos.</p>
     
     <div class="add-name-row">
       <input type="text" id="newPersonName" placeholder="Ex: Ana, Bruno, Carlos..." onkeydown="if(event.key==='Enter') addNameToList()">
@@ -386,8 +386,10 @@ select.name-select:hover { border-color: var(--primary); }
   });
 
   function initDataListeners(uid) {
-    const userDocRef = doc(db, "artifacts", appId, "users", uid, "data", "program_v2");
-    const namesDocRef = doc(db, "artifacts", appId, "users", uid, "settings", "names");
+    // AGORA USANDO CAMINHO PÚBLICO (SHARED DATA)
+    // "public/data/shared_data/program_v2" e "public/data/shared_data/names"
+    const userDocRef = doc(db, "artifacts", appId, "public", "data", "shared_data", "program_v2");
+    const namesDocRef = doc(db, "artifacts", appId, "public", "data", "shared_data", "names");
 
     onSnapshot(namesDocRef, (docSnap) => {
       let names = [];
@@ -404,6 +406,7 @@ select.name-select:hover { border-color: var(--primary); }
         document.getElementById('savedBadge').innerText = "Sincronizado";
       } else {
          loadDefaultParts();
+         // Se não existir, salva para criar a estrutura inicial
          saveToFirebase();
       }
     });
@@ -453,7 +456,8 @@ select.name-select:hover { border-color: var(--primary); }
       btn.innerText = "Salvando...";
       btn.disabled = true;
 
-      await setDoc(doc(db, "artifacts", appId, "users", currentUser.uid, "settings", "names"), 
+      // Salvando no caminho PÚBLICO
+      await setDoc(doc(db, "artifacts", appId, "public", "data", "shared_data", "names"), 
         { list: arrayUnion(...namesToAdd) }, { merge: true });
       
       input.value = '';
@@ -471,8 +475,11 @@ select.name-select:hover { border-color: var(--primary); }
 
   window.removeName = async function(name) {
     if (!currentUser) return;
-    try { await updateDoc(doc(db, "artifacts", appId, "users", currentUser.uid, "settings", "names"), 
-      { list: arrayRemove(name) }); } catch (e) { console.error(e); }
+    try { 
+        // Removendo do caminho PÚBLICO
+        await updateDoc(doc(db, "artifacts", appId, "public", "data", "shared_data", "names"), 
+          { list: arrayRemove(name) }); 
+    } catch (e) { console.error(e); }
   }
 
   let saveTimer = null;
@@ -494,7 +501,8 @@ select.name-select:hover { border-color: var(--primary); }
       parts: getParts()
     };
     try {
-      await setDoc(doc(db, "artifacts", appId, "users", currentUser.uid, "data", "program_v2"), state);
+      // Salvando no caminho PÚBLICO
+      await setDoc(doc(db, "artifacts", appId, "public", "data", "shared_data", "program_v2"), state);
       document.getElementById('savedBadge').innerText = "Salvo na Nuvem";
       setTimeout(() => { if(document.getElementById('savedBadge').innerText === "Salvo na Nuvem") document.getElementById('savedBadge').innerText = "Sincronizado"; }, 2000);
     } catch (e) {}
